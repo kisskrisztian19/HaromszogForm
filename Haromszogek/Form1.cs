@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Haromszogek
 {
@@ -34,14 +35,35 @@ namespace Haromszogek
             }
             else
             {
-                MessageBox.Show("Nincs mit törölni.", "Hiba");
+                MessageBox.Show("Nincs mit törölni.", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnFajlbol_Click(object sender, EventArgs e)
         {
             lbHaromszogLista.Items.Clear();
-            ofdMegnyitas.ShowDialog();
+            if (ofdMegnyitas.ShowDialog() == DialogResult.OK)
+            {
+                List<string> Lista;
+                StreamReader olvas = new StreamReader(ofdMegnyitas.FileName);
+                while (!olvas.EndOfStream)
+                {
+                    string[] seged = olvas.ReadLine().Split(';');
+                    aOldal = double.Parse(seged[0]);
+                    bOldal = double.Parse(seged[1]);
+                    cOldal = double.Parse(seged[2]);
+                    var fajlhszog = new Haromszog(aOldal, bOldal, cOldal);
+                    Lista = fajlhszog.AdatokSzoveg();
+                    foreach (var l in Lista)
+                    {
+                        lbHaromszogLista.Items.Add(l);
+                    }
+                    Lista.Clear();
+                }
+                olvas.Close();
+                
+            }
+            
         }
 
         private void btnKilepes_Click(object sender, EventArgs e)
@@ -77,7 +99,7 @@ namespace Haromszogek
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show("Számot adj meg!", "Hiba", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
