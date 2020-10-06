@@ -42,28 +42,67 @@ namespace Haromszogek
         private void btnFajlbol_Click(object sender, EventArgs e)
         {
             lbHaromszogLista.Items.Clear();
+
+            //if (ofdMegnyitas.ShowDialog() == DialogResult.OK)
+            //{
+            //    List<string> Lista;
+            //    StreamReader olvas = new StreamReader(ofdMegnyitas.FileName);
+            //    while (!olvas.EndOfStream)
+            //    {
+            //        string[] seged = olvas.ReadLine().Split(';');
+            //        aOldal = double.Parse(seged[0]);
+            //        bOldal = double.Parse(seged[1]);
+            //        cOldal = double.Parse(seged[2]);
+            //        var fajlhszog = new Haromszog(aOldal, bOldal, cOldal);
+            //        Lista = fajlhszog.AdatokSzoveg();
+            //        foreach (var l in Lista)
+            //        {
+            //            lbHaromszogLista.Items.Add(l);
+            //        }
+            //        Lista.Clear();
+            //    }
+            //    olvas.Close();
+
+            //}
+            //Saját ^
+
+
             if (ofdMegnyitas.ShowDialog() == DialogResult.OK)
             {
-                List<string> Lista;
-                StreamReader olvas = new StreamReader(ofdMegnyitas.FileName);
-                while (!olvas.EndOfStream)
+                try
                 {
-                    string[] seged = olvas.ReadLine().Split(';');
-                    aOldal = double.Parse(seged[0]);
-                    bOldal = double.Parse(seged[1]);
-                    cOldal = double.Parse(seged[2]);
-                    var fajlhszog = new Haromszog(aOldal, bOldal, cOldal);
-                    Lista = fajlhszog.AdatokSzoveg();
-                    foreach (var l in Lista)
+                    StreamReader file = new StreamReader(ofdMegnyitas.FileName);
+                    try
                     {
-                        lbHaromszogLista.Items.Add(l);
+                        while (!file.EndOfStream)
+                        {
+                            string sor = file.ReadLine();
+                            var h = new Haromszog(sor);
+                            lbHaromszogLista.Items.Add("Fájlból olvasás:");
+                            
+                            foreach (var a in h.AdatokSzoveg())
+                            {
+                                lbHaromszogLista.Items.Add(a);
+                            }
+                            lbHaromszogLista.Items.Add("--------------------");
+                        }
                     }
-                    Lista.Clear();
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message,
+                            "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally //Akkor is végrehajtja, ha hibás
+                    {
+                        file.Close();
+                    }
                 }
-                olvas.Close();
-                
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message,
+                            "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            
         }
 
         private void btnKilepes_Click(object sender, EventArgs e)
